@@ -13,7 +13,7 @@ import injection_model
 import pipeline
 
 if __name__ == "__main__":
-    test = injection_model.ROWS[injection_model.TRAIN_SIZE:]
+    test = injection_model.DATA["deepset/prompt-injections"]["test"]
     attacks = [r["text"] for r in test if r["label"] == 1]
     benign = [r["text"] for r in test if r["label"] == 0]
     if not pipeline.GUARD_ON:

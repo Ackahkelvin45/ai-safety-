@@ -1,19 +1,23 @@
 """Tests our detection on an open dataset we did not write: false positives, and foreign formats.
 
-    python3 eval_false_positives.py
+    python3 eval_false_positives.py          the development split (rows 0 to 999)
+    python3 eval_false_positives.py --test   the frozen test split (rows 1,000 to 1,999)
 
 Dataset: ai4privacy/pii-masking-200k on Hugging Face: synthetic English text full of
-Western-format personal data, with every sensitive value labelled. We use the first 1,000 rows.
+Western-format personal data, with every sensitive value labelled.
 
 Two questions:
 
-1. False positives. With every labelled value taken out, nothing sensitive is left in the
-   text. How often does our layer still block it or redact something?
-2. Formats we never wrote a pattern for. The dataset has account numbers, card numbers, US
-   social security numbers, IBANs and so on. None is in our database. How many does the
-   catch-all remove anyway?
+1. False positives. How often does our layer block or redact text with nothing sensitive in
+   it, and how often does it remove a harmless number (an amount, a date, a postcode)?
+2. Formats from outside our database. The dataset has account numbers, card numbers, US
+   social security numbers, IBANs and so on. How many does our layer remove?
 
-The rows are kept in a local cache that is not committed: the dataset's licence is not
+How the two splits were used. We read the misses on the development split and improved the
+detector against them, so its numbers flatter us. The test split was downloaded and scored
+only after the detector was frozen, and we did not look at its misses. It is the number to quote.
+
+The rows are kept in local caches that are not committed: the dataset's licence is not
 declared in its metadata, so we evaluate on it and do not redistribute it.
 No Guard or LLM calls are made.
 """
@@ -24,7 +28,11 @@ from pathlib import Path
 
 import pipeline
 
-CACHE = Path(__file__).with_name("pii_masking_sample.json")
+import sys
+import time
+
+TEST = "--test" in sys.argv
+CACHE = Path(__file__).with_name("pii_masking_test.json" if TEST else "pii_masking_sample.json")
 API = "https://datasets-server.huggingface.co/rows?dataset=ai4privacy/pii-masking-200k&config=default&split=train"
 ROWS = 1000
 HARMLESS = ["AMOUNT", "DATE", "TIME", "AGE", "HEIGHT", "ZIPCODE", "BUILDINGNUMBER"]
@@ -35,15 +43,24 @@ def load():
     if CACHE.exists():
         return json.loads(CACHE.read_text())
     rows = []
-    for offset in range(0, ROWS, 100):
-        with urllib.request.urlopen(f"{API}&offset={offset}&length=100", timeout=60) as r:
-            rows += [{"text": p["row"]["source_text"], "spans": p["row"]["privacy_mask"]} for p in json.load(r)["rows"]]
+    for offset in range(ROWS if TEST else 0, ROWS * 2 if TEST else ROWS, 100):
+        for attempt in range(8):   # the dataset server sometimes needs a moment
+            try:
+                with urllib.request.urlopen(f"{API}&offset={offset}&length=100", timeout=60) as r:
+                    page = json.load(r)
+                break
+            except OSError:
+                time.sleep(3 + 3 * attempt)
+        else:
+            sys.exit("Could not download the dataset.")
+        rows += [{"text": p["row"]["source_text"], "spans": p["row"]["privacy_mask"]} for p in page["rows"]]
     CACHE.write_text(json.dumps(rows))
     return rows
 
 
 if __name__ == "__main__":
     rows = load()
+    print("Frozen test split, rows 1,000 to 1,999.\n" if TEST else "Development split, rows 0 to 999.\n")
 
     blocked = redacted = 0
     for row in rows:
@@ -75,7 +92,7 @@ if __name__ == "__main__":
             if span["label"] in ID_LABELS and out is not None:
                 total[span["label"]] += 1
                 removed[span["label"]] += pipeline.compact(span["value"]) not in pipeline.compact(out)
-    print("\n2. Formats we never wrote a pattern for:\n")
+    print("\n2. Identifiers in formats from outside our database:\n")
     print("| Label in the dataset | Removed | Recall |\n|---|---|---|")
     for label in ID_LABELS:
         print(f"| {label} | {removed[label]} of {total[label]} | {removed[label] / total[label]:.0%} |")

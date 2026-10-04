@@ -4,3 +4,6 @@ Challenge Brief.pdf
 __pycache__/
 node_modules/
 pii_masking_sample.json
+audit.log
+nemotron_sample.json
+pii_masking_test.json

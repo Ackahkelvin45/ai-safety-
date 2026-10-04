@@ -1,0 +1,14 @@
+{
+  "teller": {
+    "name": "Demo teller",
+    "role": "teller",
+    "salt": "e246b83c15893bedbb50888a6e8892ec",
+    "hash": "7c898eaecb92ef4d81cae28e9dc3d1ae74d498ccd3b808fb847603cb1d20b2e6"
+  },
+  "compliance": {
+    "name": "Demo compliance officer",
+    "role": "compliance",
+    "salt": "4437f64a1d42aa69299c71c270931a84",
+    "hash": "ba66a6008a64071e1c0c5d28fb18c1f7be634dd567d63835720f9ab86b9d5b31"
+  }
+}
