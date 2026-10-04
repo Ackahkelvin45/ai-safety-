@@ -41,7 +41,7 @@ All of these are fixed and are now checked by `pipeline.check()` and the attack 
 
 Python 3, standard library only. Nothing to install. (Node is needed only to rebuild the demo page.)
 
-**1. Add your secrets.** Create a file named `.env` in this folder. It is listed in `.gitignore` and must never be committed.
+**1. Add your secrets.** Copy `.env.example` to `.env` in this folder (`cp .env.example .env`) and fill in the three values. `.env` is listed in `.gitignore` and must never be committed.
 
 ```
 GUARD_URL=https://the-url-from-the-organisers
