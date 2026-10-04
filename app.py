@@ -18,14 +18,16 @@ import pipeline
 DIST = (Path(__file__).parent / "web" / "dist").resolve()
 
 
-def found(text):
-    """Plain-language labels of the sensitive values present in text."""
+def found(text, released=()):
+    """Plain-language labels of the sensitive values present in text, apart from those the
+    policy released to this user on purpose."""
     if not text:
         return []
-    labels = {e["label"] for e in pipeline.DB if e["action"] == "redact" and e["regex"].search(text)}
-    squashed = pipeline.compact(text)
-    labels |= {pipeline.LABELS[name] for value, name, _ in pipeline.KNOWN if value in squashed}
-    return sorted(labels)
+    for shown in released:
+        text = text.replace(shown, " ")
+    notes = []
+    pipeline.detect(pipeline.canonical(text), "", notes, to_token=False)
+    return sorted({label for label in pipeline.LABELS.values() if any(label in note for note in notes)})
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -55,16 +57,19 @@ class Handler(BaseHTTPRequestHandler):
         try:
             body = json.loads(self.rfile.read(min(int(self.headers.get("Content-Length", 0)), 20000)))
             prompt, use_hook = body["prompt"].strip(), bool(body.get("hook"))
+            role = body.get("role") or "guest"
+            if role not in pipeline.POLICY:
+                raise ValueError(role)
         except (ValueError, KeyError, AttributeError, TypeError):
             return self.reply(400, {"error": "Send JSON with a text prompt."})
         if not 0 < len(prompt) <= 4000:  # the Guard's own limit
             return self.reply(400, {"error": "The prompt must be between 1 and 4,000 characters."})
         try:
-            result = pipeline.run(prompt, use_hook=use_hook)
+            result = pipeline.run(prompt, use_hook=use_hook, role=role)
         except Exception as e:  # the LLM call failed; the Guard's failures are handled inside run()
             print(f"LLM error: {e!r}")
             return self.reply(502, {"error": "The language model could not be reached. Try again."})
-        result["leaked_to_user"] = found(result["response"])
+        result["leaked_to_user"] = found(result["response"], result["released"])
         result["leaked_to_model"] = found(result["llm_input"])
         self.reply(200, result)
 

@@ -48,6 +48,21 @@
     "country": "Ghana"
   },
   {
+    "name": "DIGITAL_ADDRESS",
+    "label": "a GhanaPost digital address",
+    "country": "Ghana",
+    "pattern": "\\b[A-Z][\\s-]?[A-Z0-9][\\s-]?\\d{3,5}[\\s-]?\\d{3,4}\\b",
+    "context": [
+      "digital address",
+      "ghanapost",
+      "ghana post",
+      "gps address",
+      "address"
+    ],
+    "action": "redact",
+    "source": "The same address written without its hyphens or with spaces. Two characters and seven digits is too plain a shape on its own, so a context word is required."
+  },
+  {
     "name": "PASSPORT",
     "label": "a passport number",
     "pattern": "\\bG\\d{7}\\b",
@@ -117,5 +132,40 @@
     "pattern": "(?<!\\d)(?:\\+?254[\\s-]?|0)[17]\\d{2}[\\s-]?\\d{3}[\\s-]?\\d{3}(?!\\d)",
     "action": "redact",
     "source": "Wikipedia, 'Telephone numbers in Kenya': 9 digits after 0 or +254, mobile starting 7 or 1. Not checked against the regulator's plan."
+  },
+  {
+    "name": "IBAN",
+    "label": "an international bank account number",
+    "country": "any",
+    "pattern": "\\b[A-Z]{2}\\d{2}(?:[ ]?[A-Z0-9]){11,30}\\b",
+    "check": "iban",
+    "action": "redact",
+    "source": "ISO 13616: 2-letter country code, 2 check digits, up to 30 characters; valid when the rearranged number is 1 modulo 97. Matched in upper case only, so that the words after it are not swallowed.",
+    "case_sensitive": true
+  },
+  {
+    "name": "CREDIT_CARD",
+    "label": "a payment card number",
+    "country": "any",
+    "pattern": "(?<![\\w-])\\d(?:[ -]?\\d){12,18}(?![\\w-])",
+    "check": "luhn",
+    "action": "redact",
+    "source": "ISO/IEC 7812: 13 to 19 digits with a Luhn check digit."
+  },
+  {
+    "name": "US_SSN",
+    "label": "a US social security number",
+    "country": "United States",
+    "pattern": "(?<![\\w-])\\d{3}-\\d{2}-\\d{4}(?![\\w-])",
+    "action": "redact",
+    "source": "The standard 3-2-4 hyphenated layout, as in Microsoft Presidio's UsSsnRecognizer."
+  },
+  {
+    "name": "PHONE_INTL",
+    "label": "a phone number",
+    "country": "any",
+    "pattern": "(?<![\\w+])\\+(?:[\\s().-]{0,2}\\d){9,14}(?!\\d)",
+    "action": "redact",
+    "source": "ITU-T E.164: a plus sign and up to 15 digits. Comes after the country rows so those label their own numbers first."
   }
 ]
