@@ -61,6 +61,8 @@ python3 pipeline.py --no-hook "a prompt"   # the same with our layer off: shows 
 python3 pipeline.py --role teller "..."    # as a role: guest (default), teller or compliance
 ```
 
+`python3 pipeline.py` with no prompt runs the ten test prompts as a guest and, with a real `.env`, uses up to 36 Guard calls. Table 2.1 was measured signed in as a teller, so the third column this command prints will not match that table.
+
 **Signing in to the demo.** The page opens as a guest. The Guest, Teller and Compliance buttons at the top sign in to the demo accounts (`teller` / `teller-demo-2026`, `compliance` / `compliance-demo-2026`) and re-run the prompt on screen as that role. These are demonstration accounts; `users.json` holds only salted PBKDF2 hashes.
 
 **3. Reproduce the measurements.**
@@ -197,7 +199,7 @@ This result is by construction. A guest's request is given nothing from the file
 
 ### 2.3 Typed-in data: our own benchmark
 
-`benchmark.py` generates valid identifiers of every type in the database, puts each in a sentence, writes it in 12 different ways, and counts how many our detection removes. 40 values per type and disguise: 5,760 cases.
+`benchmark.py` generates valid identifiers of 12 of the 16 types in the database (the Ghanaian, Nigerian, Kenyan and South African rows; not IBAN, payment card, US social security number or international phone number), puts each in a sentence, writes it in 12 different ways, and counts how many our detection removes. 40 values per type and disguise: 5,760 cases.
 
 | Disguise | Removed |
 |---|---|
@@ -219,7 +221,7 @@ This result is by construction. A guest's request is given nothing from the file
 |---|---|---|
 | Identifiers removed | 327 of 377 (87%) | **348 of 392 (89%)** |
 | Harmless numbers wrongly removed (amounts, dates, times, ages, postcodes, house numbers) | 4 of 415 (1.0%) | **9 of 422 (2.1%)** |
-| Texts wrongly blocked as an injection | 0 of 1,000 | **2 of 1,000 (0.2%)** |
+| Texts wrongly blocked as an injection | 1 of 1,000 (0.1%) | **2 of 1,000 (0.2%)** |
 | Texts wrongly redacted when every labelled value is taken out | 0 of 1,000 | **0 of 1,000** |
 
 By label, on the frozen test split:
@@ -353,7 +355,7 @@ The organisers' original sketch is in [architecture.png](architecture.png). It l
 2. **Need-to-know context.** Our layer, not the model, decides which records the request may see: none for a guest; for staff, the customers the request refers to, five at most. Every name, identifier and balance in them is a token.
 3. **Guard, judge and model, at the same time.** The redacted prompt goes to the SecureAI Guard, to our allow-list judge (section 2.7) and to the model together.
 4. **Wait for both.** If the Guard objects, the model's answer is thrown away. Nothing is returned until both have finished.
-5. **Scan the answer, locally.** A real value from the customer file appearing here would mean something is wrong, because the model was never given one; it is removed.
+5. **Scan the answer, locally.** The model was never given a real value, so one appearing here would mean something is wrong. Anything in a recognised identifier format is removed. The answer is not compared with the customer file, so that no result can reveal whether a value is a customer's.
 6. **Guard checks the answer.** It sees tokens, never real values.
 7. **Release by role.** Tokens are swapped for what the signed-in role may see. Placeholders for what the user typed are swapped back to what they typed.
 
@@ -553,6 +555,7 @@ Measured live on this version, 4 October 2026, one laptop, signed in as a teller
 - **The judge wrongly refuses some real requests:** about 6% of banking77 (283 of 300 let through; 284 when scored again on the final version).
 - **The attack lockout is per session.** A guest who clears their cookies gets a new session. (The limit on identifier guessing is per account.) A real deployment would also use the network address.
 - **A successful lookup confirms the identifier** to the member of staff who typed it. The limit slows guessing; it does not prevent it. Three candidates a request and ten misses per ten minutes is about 60 guesses an hour per account. A teller who knows the last four digits of a MoMo number and its network prefix has 1,000 candidates left, about 17 hours; without the prefix, up to 30,000, which is weeks; a Ghana Card (a million) is not practical. The audit log is what would catch it; a real deployment would lengthen the lock.
+- **The miss limit can be outrun by simultaneous requests.** It is applied as each request finishes, so a burst of simultaneous requests can try more candidates than the limit before the lock lands. A real deployment would handle one lookup per account at a time.
 - **The account lock can be used against the account.** Anyone with a published demo password can lock that account with eleven wrong numbers.
 - **Demo accounts.** Two accounts with published passwords, sessions kept in memory.
 - **Names of people who are not customers** are not detected when typed.
