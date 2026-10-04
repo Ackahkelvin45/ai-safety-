@@ -1,0 +1,4 @@
+# secrets: the team token and the LLM key live in .env; the brief PDF contains the LLM key
+.env
+Challenge Brief.pdf
+__pycache__/

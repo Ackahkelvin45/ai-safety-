@@ -1,0 +1,452 @@
+[
+  {
+    "name": "Kwame Agyemang",
+    "ghana_card": "GHA-169871689-7",
+    "momo_number": "0268469788",
+    "ssnit": "A932081967273",
+    "digital_address": "NT-177-8486",
+    "city": "Tamale",
+    "balance_ghs": 16760.36
+  },
+  {
+    "name": "Kojo Boateng",
+    "ghana_card": "GHA-887663440-0",
+    "momo_number": "0559787534",
+    "ssnit": "H787680457178",
+    "digital_address": "CC-472-6714",
+    "city": "Cape Coast",
+    "balance_ghs": 22586.43
+  },
+  {
+    "name": "Araba Appiah",
+    "ghana_card": "GHA-136270107-9",
+    "momo_number": "0271933190",
+    "ssnit": "E520599728379",
+    "digital_address": "CC-298-4162",
+    "city": "Cape Coast",
+    "balance_ghs": 23379.65
+  },
+  {
+    "name": "Araba Lamptey",
+    "ghana_card": "GHA-866283601-6",
+    "momo_number": "0540550087",
+    "ssnit": "F475177992298",
+    "digital_address": "CC-369-5793",
+    "city": "Cape Coast",
+    "balance_ghs": 16978.53
+  },
+  {
+    "name": "Dzifa Amoah",
+    "ghana_card": "GHA-860320807-3",
+    "momo_number": "0560283822",
+    "ssnit": "C646861642524",
+    "digital_address": "GA-776-4725",
+    "city": "Accra",
+    "balance_ghs": 13007.41
+  },
+  {
+    "name": "Akosua Mahama",
+    "ghana_card": "GHA-188413301-7",
+    "momo_number": "0506820525",
+    "ssnit": "D194893949482",
+    "digital_address": "NT-141-6210",
+    "city": "Tamale",
+    "balance_ghs": 18989.86
+  },
+  {
+    "name": "Adwoa Agyemang",
+    "ghana_card": "GHA-185491452-4",
+    "momo_number": "0201064600",
+    "ssnit": "B304118955799",
+    "digital_address": "AK-065-9397",
+    "city": "Kumasi",
+    "balance_ghs": 10681.79
+  },
+  {
+    "name": "Selorm Boateng",
+    "ghana_card": "GHA-584645060-4",
+    "momo_number": "0504146590",
+    "ssnit": "F380129110285",
+    "digital_address": "GA-940-6925",
+    "city": "Accra",
+    "balance_ghs": 10411.69
+  },
+  {
+    "name": "Selorm Adjei",
+    "ghana_card": "GHA-363228088-6",
+    "momo_number": "0202300487",
+    "ssnit": "G452912808458",
+    "digital_address": "NT-500-3703",
+    "city": "Tamale",
+    "balance_ghs": 16994.62
+  },
+  {
+    "name": "Nii Ansah",
+    "ghana_card": "GHA-653845355-7",
+    "momo_number": "0568794326",
+    "ssnit": "C705860214584",
+    "digital_address": "AK-210-8394",
+    "city": "Kumasi",
+    "balance_ghs": 14337.1
+  },
+  {
+    "name": "Kwesi Yeboah",
+    "ghana_card": "GHA-688281126-5",
+    "momo_number": "0274409324",
+    "ssnit": "E845263097658",
+    "digital_address": "NT-280-2582",
+    "city": "Tamale",
+    "balance_ghs": 4140.25
+  },
+  {
+    "name": "Naa Appiah",
+    "ghana_card": "GHA-805154382-9",
+    "momo_number": "0573215711",
+    "ssnit": "G494157718835",
+    "digital_address": "GA-795-1117",
+    "city": "Accra",
+    "balance_ghs": 19460.13
+  },
+  {
+    "name": "Nii Lamptey",
+    "ghana_card": "GHA-325688557-6",
+    "momo_number": "0502373556",
+    "ssnit": "G327926451547",
+    "digital_address": "CC-428-4352",
+    "city": "Cape Coast",
+    "balance_ghs": 14054.43
+  },
+  {
+    "name": "Fiifi Yeboah",
+    "ghana_card": "GHA-449766085-6",
+    "momo_number": "0501788365",
+    "ssnit": "F062048425996",
+    "digital_address": "GA-775-0031",
+    "city": "Accra",
+    "balance_ghs": 16533.88
+  },
+  {
+    "name": "Naa Adjei",
+    "ghana_card": "GHA-503784951-8",
+    "momo_number": "0598012537",
+    "ssnit": "D924196898210",
+    "digital_address": "CC-460-2883",
+    "city": "Cape Coast",
+    "balance_ghs": 24710.56
+  },
+  {
+    "name": "Efua Tetteh",
+    "ghana_card": "GHA-555597475-4",
+    "momo_number": "0247207547",
+    "ssnit": "D548643906188",
+    "digital_address": "NT-479-1889",
+    "city": "Tamale",
+    "balance_ghs": 8161.18
+  },
+  {
+    "name": "Adwoa Ansah",
+    "ghana_card": "GHA-552182488-6",
+    "momo_number": "0549307336",
+    "ssnit": "C834728556898",
+    "digital_address": "CC-329-8222",
+    "city": "Cape Coast",
+    "balance_ghs": 19943.02
+  },
+  {
+    "name": "Ama Boateng",
+    "ghana_card": "GHA-044224852-7",
+    "momo_number": "0552022697",
+    "ssnit": "A438581762528",
+    "digital_address": "GA-070-0159",
+    "city": "Accra",
+    "balance_ghs": 21103.78
+  },
+  {
+    "name": "Selorm Addo",
+    "ghana_card": "GHA-502831663-2",
+    "momo_number": "0593735286",
+    "ssnit": "G753478971331",
+    "digital_address": "CC-159-2123",
+    "city": "Cape Coast",
+    "balance_ghs": 16045.58
+  },
+  {
+    "name": "Akosua Appiah",
+    "ghana_card": "GHA-608244560-7",
+    "momo_number": "0277457212",
+    "ssnit": "D576990854177",
+    "digital_address": "AK-588-8144",
+    "city": "Kumasi",
+    "balance_ghs": 978.89
+  },
+  {
+    "name": "Kwame Owusu",
+    "ghana_card": "GHA-187916979-7",
+    "momo_number": "0270252016",
+    "ssnit": "B284001981524",
+    "digital_address": "GA-735-7363",
+    "city": "Accra",
+    "balance_ghs": 12876.48
+  },
+  {
+    "name": "Esi Asante",
+    "ghana_card": "GHA-607392731-9",
+    "momo_number": "0569678073",
+    "ssnit": "G087243854690",
+    "digital_address": "CC-598-2819",
+    "city": "Cape Coast",
+    "balance_ghs": 9243.75
+  },
+  {
+    "name": "Akosua Ansah",
+    "ghana_card": "GHA-918276116-6",
+    "momo_number": "0243304284",
+    "ssnit": "F142038178057",
+    "digital_address": "AK-803-7041",
+    "city": "Kumasi",
+    "balance_ghs": 4250.13
+  },
+  {
+    "name": "Efua Ansah",
+    "ghana_card": "GHA-430490741-8",
+    "momo_number": "0558898370",
+    "ssnit": "F386713006681",
+    "digital_address": "GA-792-2328",
+    "city": "Accra",
+    "balance_ghs": 5024.12
+  },
+  {
+    "name": "Ama Appiah",
+    "ghana_card": "GHA-642710512-9",
+    "momo_number": "0273725278",
+    "ssnit": "B206176958519",
+    "digital_address": "CC-043-1634",
+    "city": "Cape Coast",
+    "balance_ghs": 14886.78
+  },
+  {
+    "name": "Alhassan Addo",
+    "ghana_card": "GHA-480052791-3",
+    "momo_number": "0562987112",
+    "ssnit": "A984264079426",
+    "digital_address": "AK-079-1135",
+    "city": "Kumasi",
+    "balance_ghs": 11123.85
+  },
+  {
+    "name": "Alhassan Appiah",
+    "ghana_card": "GHA-647744796-7",
+    "momo_number": "0205219803",
+    "ssnit": "D463521362958",
+    "digital_address": "GA-639-8488",
+    "city": "Accra",
+    "balance_ghs": 24270.95
+  },
+  {
+    "name": "Esi Mahama",
+    "ghana_card": "GHA-573284093-4",
+    "momo_number": "0556927670",
+    "ssnit": "E098584638849",
+    "digital_address": "CC-855-6830",
+    "city": "Cape Coast",
+    "balance_ghs": 10560.9
+  },
+  {
+    "name": "Yaw Yeboah",
+    "ghana_card": "GHA-695389650-1",
+    "momo_number": "0593279672",
+    "ssnit": "G835081113617",
+    "digital_address": "NT-958-1635",
+    "city": "Tamale",
+    "balance_ghs": 7799.61
+  },
+  {
+    "name": "Kwesi Appiah",
+    "ghana_card": "GHA-115276113-8",
+    "momo_number": "0565921153",
+    "ssnit": "C771862107617",
+    "digital_address": "GA-707-7510",
+    "city": "Accra",
+    "balance_ghs": 10220.93
+  },
+  {
+    "name": "Kwabena Owusu",
+    "ghana_card": "GHA-148836152-0",
+    "momo_number": "0559944613",
+    "ssnit": "F161994569943",
+    "digital_address": "NT-982-8640",
+    "city": "Tamale",
+    "balance_ghs": 13910.18
+  },
+  {
+    "name": "Kojo Mahama",
+    "ghana_card": "GHA-874643972-5",
+    "momo_number": "0274441930",
+    "ssnit": "D995515669796",
+    "digital_address": "CC-156-7959",
+    "city": "Cape Coast",
+    "balance_ghs": 9466.36
+  },
+  {
+    "name": "Afia Owusu",
+    "ghana_card": "GHA-565470567-0",
+    "momo_number": "0570488015",
+    "ssnit": "G464403301320",
+    "digital_address": "GA-598-7198",
+    "city": "Accra",
+    "balance_ghs": 12928.34
+  },
+  {
+    "name": "Afia Adjei",
+    "ghana_card": "GHA-421631111-9",
+    "momo_number": "0260278046",
+    "ssnit": "F873064248296",
+    "digital_address": "GA-017-9677",
+    "city": "Accra",
+    "balance_ghs": 15907.76
+  },
+  {
+    "name": "Dzifa Owusu",
+    "ghana_card": "GHA-041263478-9",
+    "momo_number": "0553524013",
+    "ssnit": "H615610591483",
+    "digital_address": "AK-354-1488",
+    "city": "Kumasi",
+    "balance_ghs": 2824.99
+  },
+  {
+    "name": "Akosua Asante",
+    "ghana_card": "GHA-378522238-4",
+    "momo_number": "0546497533",
+    "ssnit": "C571929480853",
+    "digital_address": "GA-470-4247",
+    "city": "Accra",
+    "balance_ghs": 9845.35
+  },
+  {
+    "name": "Kojo Adjei",
+    "ghana_card": "GHA-341461754-4",
+    "momo_number": "0550146133",
+    "ssnit": "A053051478658",
+    "digital_address": "GA-930-5977",
+    "city": "Accra",
+    "balance_ghs": 17264.53
+  },
+  {
+    "name": "Akosua Tetteh",
+    "ghana_card": "GHA-553848856-8",
+    "momo_number": "0540670907",
+    "ssnit": "C761514136334",
+    "digital_address": "GA-370-1087",
+    "city": "Accra",
+    "balance_ghs": 8810.41
+  },
+  {
+    "name": "Nii Agbeko",
+    "ghana_card": "GHA-239424646-6",
+    "momo_number": "0276316653",
+    "ssnit": "H453581342172",
+    "digital_address": "NT-334-9677",
+    "city": "Tamale",
+    "balance_ghs": 1120.76
+  },
+  {
+    "name": "Nii Appiah",
+    "ghana_card": "GHA-410475168-8",
+    "momo_number": "0265611410",
+    "ssnit": "C359534940429",
+    "digital_address": "CC-474-7818",
+    "city": "Cape Coast",
+    "balance_ghs": 3264.98
+  },
+  {
+    "name": "Esi Appiah",
+    "ghana_card": "GHA-602619568-0",
+    "momo_number": "0270100052",
+    "ssnit": "A070091703927",
+    "digital_address": "CC-330-5703",
+    "city": "Cape Coast",
+    "balance_ghs": 952.97
+  },
+  {
+    "name": "Fiifi Mensah",
+    "ghana_card": "GHA-781661146-3",
+    "momo_number": "0501102038",
+    "ssnit": "D004030042637",
+    "digital_address": "NT-167-1552",
+    "city": "Tamale",
+    "balance_ghs": 20364.67
+  },
+  {
+    "name": "Abena Mensah",
+    "ghana_card": "GHA-012670812-9",
+    "momo_number": "0567057929",
+    "ssnit": "C398133702718",
+    "digital_address": "AK-615-8129",
+    "city": "Kumasi",
+    "balance_ghs": 21509.61
+  },
+  {
+    "name": "Dzifa Agyemang",
+    "ghana_card": "GHA-470675548-5",
+    "momo_number": "0246635167",
+    "ssnit": "G825973481241",
+    "digital_address": "GA-726-4366",
+    "city": "Accra",
+    "balance_ghs": 20205.58
+  },
+  {
+    "name": "Naa Amoah",
+    "ghana_card": "GHA-909208242-2",
+    "momo_number": "0244262837",
+    "ssnit": "A950601889870",
+    "digital_address": "AK-415-1780",
+    "city": "Kumasi",
+    "balance_ghs": 20521.27
+  },
+  {
+    "name": "Esi Ansah",
+    "ghana_card": "GHA-325269563-7",
+    "momo_number": "0272760821",
+    "ssnit": "G121385607002",
+    "digital_address": "AK-238-6969",
+    "city": "Kumasi",
+    "balance_ghs": 22537.77
+  },
+  {
+    "name": "Ama Adjei",
+    "ghana_card": "GHA-432746550-1",
+    "momo_number": "0595100637",
+    "ssnit": "B711243351658",
+    "digital_address": "AK-509-8680",
+    "city": "Kumasi",
+    "balance_ghs": 19318.82
+  },
+  {
+    "name": "Afia Addo",
+    "ghana_card": "GHA-431610302-2",
+    "momo_number": "0500215205",
+    "ssnit": "B148294183419",
+    "digital_address": "CC-082-3861",
+    "city": "Cape Coast",
+    "balance_ghs": 20662.18
+  },
+  {
+    "name": "Afia Agyemang",
+    "ghana_card": "GHA-212223863-7",
+    "momo_number": "0277760405",
+    "ssnit": "E246854242764",
+    "digital_address": "CC-129-7447",
+    "city": "Cape Coast",
+    "balance_ghs": 10127.71
+  },
+  {
+    "name": "Fiifi Owusu",
+    "ghana_card": "GHA-471393605-5",
+    "momo_number": "0244965709",
+    "ssnit": "G056433387926",
+    "digital_address": "GA-877-1099",
+    "city": "Accra",
+    "balance_ghs": 10061.91
+  }
+]
