@@ -2,3 +2,5 @@
 .env
 Challenge Brief.pdf
 __pycache__/
+node_modules/
+pii_masking_sample.json

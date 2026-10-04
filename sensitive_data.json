@@ -4,48 +4,118 @@
     "label": "an instruction to ignore the assistant's rules",
     "pattern": "ignore\\s+(all\\s+)?(the\\s+)?(previous|prior|above)\\s+instructions",
     "action": "block",
-    "source": "one common wording; injections are the Guard's job"
+    "source": "one common wording; injections are the Guard's job",
+    "country": "any"
   },
   {
     "name": "GHANA_CARD",
     "label": "a Ghana Card number",
     "pattern": "\\b(?:GHA[\\s-]*\\d{8,9}[\\s-]*[0-9A-Z]|[A-Z]{3}-\\d{8,9}-[0-9A-Z])\\b",
     "action": "redact",
-    "source": "GRA submission to the OECD: 3-letter nationality code, 8 or 9 digits, 1 check character (digit or letter). GHA form tolerates spaces; other nationalities need the hyphens. Check-digit algorithm is not public."
+    "source": "GRA submission to the OECD: 3-letter nationality code, 8 or 9 digits, 1 check character (digit or letter). GHA form tolerates spaces; other nationalities need the hyphens. Check-digit algorithm is not public.",
+    "country": "Ghana"
   },
   {
     "name": "SSNIT",
     "label": "a SSNIT number",
     "pattern": "\\b[A-Z]\\d{12}\\b",
     "action": "redact",
-    "source": "no official specification found. Daily Graphic, 8 April 2014: SSNIT issues '13 alphanumeric social security numbers' in place of older eight-digit ones. One letter plus 12 digits matches the examples in identity-verification vendors' documentation. Old eight-digit numbers are not matched."
+    "source": "no official specification found. Daily Graphic, 8 April 2014: SSNIT issues '13 alphanumeric social security numbers' in place of older eight-digit ones. One letter plus 12 digits matches the examples in identity-verification vendors' documentation. Old eight-digit numbers are not matched.",
+    "country": "Ghana"
   },
   {
     "name": "GRA_TIN",
     "label": "a taxpayer identification number",
     "pattern": "\\b[PCGQV]00[0-9A-Z]{8}\\b",
     "action": "redact",
-    "source": "GRA: 11 characters, prefix P00, C00, G00, Q00 or V00"
+    "source": "GRA: 11 characters, prefix P00, C00, G00, Q00 or V00",
+    "country": "Ghana"
   },
   {
     "name": "PHONE_OR_MOMO",
     "label": "a phone or mobile money number",
     "pattern": "(?<!\\d)(?:\\+?233|0)[\\s-]?[235]\\d[\\s-]?\\d{3}[\\s-]?\\d{4}(?!\\d)",
     "action": "redact",
-    "source": "NCA numbering plan: 9 digits after 0 or +233; mobile starts 2 or 5, landline 3"
+    "source": "NCA numbering plan: 9 digits after 0 or +233; mobile starts 2 or 5, landline 3",
+    "country": "Ghana"
   },
   {
     "name": "DIGITAL_ADDRESS",
     "label": "a GhanaPost digital address",
     "pattern": "\\b[A-Z][A-Z0-9]-\\d{3,5}-\\d{3,4}\\b",
     "action": "redact",
-    "source": "GhanaPostGPS (ghanapostgps.com): postal code (region letter, district character, area code) plus a unique address, example AK-039-5028. Area codes of 3 to 5 digits and a digit as district character are from Wikipedia's 'Postal codes in Ghana'."
+    "source": "GhanaPostGPS (ghanapostgps.com): postal code (region letter, district character, area code) plus a unique address, example AK-039-5028. Area codes of 3 to 5 digits and a digit as district character are from Wikipedia's 'Postal codes in Ghana'.",
+    "country": "Ghana"
   },
   {
     "name": "PASSPORT",
     "label": "a passport number",
     "pattern": "\\bG\\d{7}\\b",
     "action": "redact",
-    "source": "unverified: no official source found. An identity-verification vendor's documentation lists the format as G0000000, seen in a search result only."
+    "source": "unverified: no official source found. An identity-verification vendor's documentation lists the format as G0000000, seen in a search result only.",
+    "country": "Ghana"
+  },
+  {
+    "name": "NG_PHONE",
+    "label": "a Nigerian phone number",
+    "country": "Nigeria",
+    "pattern": "(?<!\\d)(?:\\+?234[\\s-]?|0)[789][01]\\d[\\s-]?\\d{3}[\\s-]?\\d{4}(?!\\d)",
+    "action": "redact",
+    "source": "Wikipedia, 'Telephone numbers in Nigeria': mobile numbers are 11 digits starting 070, 080, 081, 090 or 091. Not checked against the NCC numbering plan."
+  },
+  {
+    "name": "NG_NIN",
+    "label": "a Nigerian national identification number",
+    "country": "Nigeria",
+    "pattern": "\\b\\d{11}\\b",
+    "check": "verhoeff",
+    "context": [
+      "nin",
+      "national identification number",
+      "national identity number",
+      "nimc",
+      "national identity",
+      "nigeria id",
+      "nigerian identification"
+    ],
+    "action": "redact",
+    "source": "Microsoft Presidio NgNinRecognizer (MIT licence): 11 digits, last digit a Verhoeff checksum, same context words. Redacted only when the checksum passes and a context word is nearby."
+  },
+  {
+    "name": "NG_BVN",
+    "label": "a Nigerian bank verification number",
+    "country": "Nigeria",
+    "pattern": "\\b\\d{11}\\b",
+    "context": [
+      "bvn",
+      "bank verification number"
+    ],
+    "action": "redact",
+    "source": "Wikipedia, 'Bank Verification Number': 11 digits. No public checksum, so a context word is required."
+  },
+  {
+    "name": "ZA_ID",
+    "label": "a South African ID number",
+    "country": "South Africa",
+    "pattern": "\\b\\d{10}[0-2][89]\\d\\b",
+    "check": "za_id",
+    "action": "redact",
+    "source": "Microsoft Presidio ZaIdNumberRecognizer (MIT licence): 13 digits YYMMDDSSSSCAZ, valid birth date, Luhn check digit."
+  },
+  {
+    "name": "KE_KRA_PIN",
+    "label": "a Kenyan tax PIN",
+    "country": "Kenya",
+    "pattern": "\\b[AP]\\d{9}[A-Z]\\b",
+    "action": "redact",
+    "source": "python-stdnum (stdnum.ke.pin): letter A (individual) or P (company), 9 digits, 1 letter."
+  },
+  {
+    "name": "KE_PHONE",
+    "label": "a Kenyan phone number",
+    "country": "Kenya",
+    "pattern": "(?<!\\d)(?:\\+?254[\\s-]?|0)[17]\\d{2}[\\s-]?\\d{3}[\\s-]?\\d{3}(?!\\d)",
+    "action": "redact",
+    "source": "Wikipedia, 'Telephone numbers in Kenya': 9 digits after 0 or +254, mobile starting 7 or 1. Not checked against the regulator's plan."
   }
 ]

@@ -1,51 +1,22 @@
-"""Measures the input guard on a public prompt-injection dataset.
+"""Measures the input guard on prompt injections it has not seen.
 
     python3 eval_injections.py
 
-Dataset: deepset/prompt-injections on Hugging Face (Apache-2.0), 662 prompts labelled
-1 = injection, 0 = benign. Downloaded once and cached in prompt_injections.json.
-Only the input guard is run, so no LLM calls are made.
+Uses the test split of deepset/prompt-injections (116 prompts: 60 injections, 56 benign).
+Our injection detector was trained on the train split only (see injection_model.py), so
+this is a fair test of it. Only the input guard is run, so no LLM calls are made.
 
-The SecureAI Guard allows 1,000 calls a day, so when it is on we test a fixed random
-sample of 100 prompts (50 injections, 50 benign), one Guard call each. That takes about
-four minutes at the Guard's limit of 30 calls a minute.
+With the SecureAI Guard on, this makes 116 Guard calls (the daily limit is 1,000) and takes
+about five minutes at the Guard's limit of 30 calls a minute.
 """
-import json
-import random
-import urllib.request
-from pathlib import Path
-
+import injection_model
 import pipeline
 
-CACHE = Path(__file__).with_name("prompt_injections.json")
-API = "https://datasets-server.huggingface.co/rows?dataset=deepset/prompt-injections&config=default"
-
-
-def load():
-    if CACHE.exists():
-        return json.loads(CACHE.read_text())
-    rows = []
-    for split in ("train", "test"):
-        offset = 0
-        while True:
-            with urllib.request.urlopen(f"{API}&split={split}&offset={offset}&length=100", timeout=30) as r:
-                page = json.load(r)
-            rows += [p["row"] for p in page["rows"]]
-            offset += 100
-            if offset >= page["num_rows_total"]:
-                break
-    CACHE.write_text(json.dumps(rows))
-    return rows
-
-
 if __name__ == "__main__":
-    rows = load()
-    attacks = [r["text"] for r in rows if r["label"] == 1]
-    benign = [r["text"] for r in rows if r["label"] == 0]
-    if pipeline.GUARD_ON:
-        random.seed(2026)
-        attacks, benign = random.sample(attacks, 50), random.sample(benign, 50)
-    else:
+    test = injection_model.ROWS[injection_model.TRAIN_SIZE:]
+    attacks = [r["text"] for r in test if r["label"] == 1]
+    benign = [r["text"] for r in test if r["label"] == 0]
+    if not pipeline.GUARD_ON:
         print("The SecureAI Guard is not configured, so only our hook is measured.\n")
 
     def measure(texts):
