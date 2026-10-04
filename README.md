@@ -392,6 +392,15 @@ The two decisions above are data, so the demo page lets them be changed while it
 - **Who may see what.** A grid of record fields against roles; each cell is "shown in full", "last four only" or "hidden". Set the teller's Ghana Card to "hidden", run the same prompt, and the answer changes.
 - **What is caught in typed text.** One switch per data type in the database, grouped by country, plus one for the catch-all and the learned detector.
 
+- **Strict mode.** One switch that hides every number of eight digits or more, whatever is written around it, unless it is money or a date. It is for an organisation that would sooner lose a harmless number than let an unknown identifier through. On the open dataset of section 2.4 we adjusted it on the development split, then scored it once on a third slice nobody had looked at (rows 2,000 to 2,999, `python3 eval_false_positives.py --fresh`, with and without `--strict`):
+
+  | Fresh slice, 1,000 texts | Strict mode off | Strict mode on |
+  |---|---|---|
+  | Identifiers removed | 343 of 398 (86%) | **393 of 398 (99%)** |
+  | Harmless numbers wrongly removed | 7 of 442 (1.6%) | 9 of 442 (2.0%) |
+
+  The second row understates the cost. The dataset labels amounts, dates, times, ages and postcodes as harmless, but not order, invoice or reference numbers, and strict mode hides those too when they have eight digits or more. That is why it is off by default.
+
 Only a compliance officer can change a setting; the server refuses anyone else, checks every value against a fixed list, and writes the change to the audit log. A guest's row cannot be edited: a guest always gets nothing from the customer file. Settings are kept in memory and return to the defaults on restart. Every measured result in this README describes the default settings. Adding a new pattern from the page is not offered: a badly written pattern can stall the server, so new types are still added as rows in `sensitive_data.json`.
 
 ### 4.3 Need-to-know context

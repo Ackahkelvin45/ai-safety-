@@ -176,6 +176,10 @@ FILE_TYPES = {"GHANA_CARD", "PHONE_OR_MOMO", "SSNIT", "DIGITAL_ADDRESS"}
 # is one; this is the other: the data types switched off for typed-in text. A name here is a
 # database row, or UNVERIFIED_ID for the catch-all rules and the learned detector. Kept in memory.
 DISABLED = set()
+# Strict mode, also a setting: hide every number of eight or more digits that is not money or a
+# date, whatever is written around it. It catches bare account numbers and unfamiliar phone
+# layouts that carry no clue, and it costs some harmless numbers (see the README). Off by default.
+OPTIONS = {"strict": False}
 
 VAULT_KEY = os.urandom(16)   # lives only in this process; without it a token cannot be reversed
 
@@ -415,6 +419,8 @@ ID_SHAPE = re.compile(r"(?<![\w.,#])(?!\d{4}-\d{2}-\d{2}\b)(?=(?:[A-Z-]*\d){6})[
 # A run of 12 or more digits is an account, card or identity number far more often than anything
 # else a member of staff would type, so it is redacted with or without an identity word.
 LONG_DIGITS = re.compile(r"(?<![\w.,#-])\d(?:[ -]?\d){11,}(?![\w-]|[.,]\d)")
+STRICT_DIGITS = re.compile(r"(?<![\w.,-])\+?\(?\d(?:[ .()/-]{0,2}\d){7,}(?![\w-]|[.,]\d)")
+DATE_TIME = re.compile(r"(?:\d{1,2}[ ./-]\d{1,2}[ ./-]\d{2,4}|\d{4}[ ./-]\d{1,2}[ ./-]\d{1,2})(?:[ T]\d{1,2}[.:]\d{2}(?:[.:]\d{2})?)?")
 MONEY_BEFORE = re.compile(r"(?:GHS|GH₵|₵|NGN|₦|KES|KSh|ZAR|USD|\$|€|£)\s?$", re.I)
 MONEY_AFTER = re.compile(r"^\s?(?:cedis?|pesewas?|naira|shillings?|rand|dollars?|%)", re.I)
 
@@ -521,6 +527,15 @@ def detect(text, subject, notes, vault=None, lookup=True, blocking=True):
             if regex.search(text):
                 text = regex.sub(vault.mention(index, "name"), text)
                 notes.append(f"{subject} named a customer. The assistant was given a reference in place of the name.")
+    if OPTIONS["strict"]:
+        def strict_hit(m):
+            date = DATE_TIME.match(text, m.start())
+            if date and date.end() >= m.end():   # the whole run is a date, with or without a time
+                return False
+            # twelve digits or more is not an amount of money, whatever sign stands before it
+            return sum(ch.isdigit() for ch in m.group()) >= 12 or not harmless(text, m.start(), m.end())
+        for m in reversed([m for m in STRICT_DIGITS.finditer(text) if strict_hit(m)]):
+            text = text[:m.start()] + stand_in("UNVERIFIED_ID", m.group()) + text[m.end():]
     if "UNVERIFIED_ID" in DISABLED:
         return text
     for shape, need_word in ((ID_SHAPE, True), (LONG_DIGITS, False)):
@@ -930,6 +945,14 @@ def check():
         assert hook("card GHA-123456789-0, call 0241234567", "input")[0] == "card GHA-123456789-0, call [PHONE_OR_MOMO]"
     finally:
         DISABLED.clear()
+    # strict mode: a bare number of eight digits or more goes; dates, money and shorter numbers stay
+    OPTIONS["strict"] = True
+    try:
+        assert hook("Please check 12345678 for me, order 1234567.", "input")[0] == "Please check [UNVERIFIED_ID] for me, order 1234567."
+        for clean in ("Meet on 17/09/2014 17:20 or 2026-10-04.", "The balance is GHS 16,760.36."):
+            assert hook(clean, "input")[0] == clean, clean
+    finally:
+        OPTIONS["strict"] = False
     before = POLICY["teller"].pop("BALANCE")
     try:
         assert rehydrate(answer, "teller", vault)[0] == f"It is {partial(c['ghana_card'])} and [withheld]."

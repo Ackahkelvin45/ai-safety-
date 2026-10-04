@@ -252,6 +252,13 @@ function Settings({ onClose }) {
                 ))}
               </div>
             ))}
+            <div className="types strict">
+              <span>Strict mode</span>
+              <label>
+                <input type="checkbox" checked={s.strict} disabled={!s.can_edit} onChange={() => change({ strict: !s.strict })} />
+                hide every number of eight digits or more, unless it is money or a date
+              </label>
+            </div>
             <p className="with">Changes apply to everyone at once and last until the server restarts. A guest always sees nothing from the customer file.</p>
           </>
         )}

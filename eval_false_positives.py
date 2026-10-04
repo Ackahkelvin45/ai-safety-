@@ -2,6 +2,8 @@
 
     python3 eval_false_positives.py          the development split (rows 0 to 999)
     python3 eval_false_positives.py --test   the frozen test split (rows 1,000 to 1,999)
+    python3 eval_false_positives.py --fresh  a third slice (rows 2,000 to 2,999), used once to score strict mode
+    add --strict to any of them to switch strict mode on (pipeline.OPTIONS)
 
 Dataset: ai4privacy/pii-masking-200k on Hugging Face: synthetic English text full of
 Western-format personal data, with every sensitive value labelled.
@@ -32,7 +34,10 @@ import sys
 import time
 
 TEST = "--test" in sys.argv
-CACHE = Path(__file__).with_name("pii_masking_test.json" if TEST else "pii_masking_sample.json")
+FRESH = "--fresh" in sys.argv
+pipeline.OPTIONS["strict"] = "--strict" in sys.argv
+START = 2000 if FRESH else 1000 if TEST else 0
+CACHE = Path(__file__).with_name("pii_masking_fresh.json" if FRESH else "pii_masking_test.json" if TEST else "pii_masking_sample.json")
 API = "https://datasets-server.huggingface.co/rows?dataset=ai4privacy/pii-masking-200k&config=default&split=train"
 ROWS = 1000
 HARMLESS = ["AMOUNT", "DATE", "TIME", "AGE", "HEIGHT", "ZIPCODE", "BUILDINGNUMBER"]
@@ -43,7 +48,7 @@ def load():
     if CACHE.exists():
         return json.loads(CACHE.read_text())
     rows = []
-    for offset in range(ROWS if TEST else 0, ROWS * 2 if TEST else ROWS, 100):
+    for offset in range(START, START + ROWS, 100):
         for attempt in range(8):   # the dataset server sometimes needs a moment
             try:
                 with urllib.request.urlopen(f"{API}&offset={offset}&length=100", timeout=60) as r:
@@ -60,7 +65,8 @@ def load():
 
 if __name__ == "__main__":
     rows = load()
-    print("Frozen test split, rows 1,000 to 1,999.\n" if TEST else "Development split, rows 0 to 999.\n")
+    print(("Fresh slice, rows 2,000 to 2,999." if FRESH else "Frozen test split, rows 1,000 to 1,999." if TEST
+           else "Development split, rows 0 to 999.") + (" Strict mode ON.\n" if pipeline.OPTIONS["strict"] else "\n"))
 
     blocked = redacted = 0
     for row in rows:

@@ -59,7 +59,8 @@ def settings(session):
     return {"can_edit": session["role"] == "compliance",
             "fields": FIELDS,
             "policy": {role: {name: pipeline.POLICY[role].get(name, "hidden") for name, _ in FIELDS} for role in EDITABLE_ROLES},
-            "types": [dict(t, on=t["name"] not in pipeline.DISABLED) for t in TYPES]}
+            "types": [dict(t, on=t["name"] not in pipeline.DISABLED) for t in TYPES],
+            "strict": pipeline.OPTIONS["strict"]}
 
 
 def sign(session_id):
@@ -192,13 +193,14 @@ class Handler(BaseHTTPRequestHandler):
         fixed list before anything is applied. The change is for everyone and lasts until restart."""
         if session["role"] != "compliance":
             return self.reply(403, {"error": "Only a compliance officer can change the settings."})
-        policy, disabled = body.get("policy", {}), body.get("disabled")
+        policy, disabled, strict = body.get("policy", {}), body.get("disabled"), body.get("strict")
         names = {name for name, _ in FIELDS}
         valid = (isinstance(policy, dict) and all(
                      role in EDITABLE_ROLES and isinstance(cells, dict)
                      and all(name in names and mode in MODES for name, mode in cells.items())
                      for role, cells in policy.items())
-                 and (disabled is None or (isinstance(disabled, list) and set(map(str, disabled)) <= {t["name"] for t in TYPES})))
+                 and (disabled is None or (isinstance(disabled, list) and set(map(str, disabled)) <= {t["name"] for t in TYPES}))
+                 and strict in (None, True, False))
         if not valid:
             return self.reply(400, {"error": "Bad request."})
         with LOCK:
@@ -211,7 +213,9 @@ class Handler(BaseHTTPRequestHandler):
             if disabled is not None:
                 pipeline.DISABLED.clear()
                 pipeline.DISABLED.update(disabled)
-        audit(session, event="settings changed", policy=policy, disabled=sorted(pipeline.DISABLED))
+            if strict is not None:
+                pipeline.OPTIONS["strict"] = strict
+        audit(session, event="settings changed", policy=policy, disabled=sorted(pipeline.DISABLED), strict=pipeline.OPTIONS["strict"])
         self.reply(200, settings(session))
 
     def run_prompt(self, session, body):
