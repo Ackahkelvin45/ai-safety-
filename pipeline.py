@@ -480,11 +480,14 @@ def detect(text, subject, notes, vault=None, lookup=True, blocking=True):
                          "identifiers and balances are withheld in this answer.")
 
     def stand_in(name, value):
+        # The catch-all's stand-in is written NUMBER. Written as UNVERIFIED_ID, the Guard flagged
+        # "Please check [YOUR_UNVERIFIED_ID_1] for me." as an injection (one observation, live).
+        shown_as = "NUMBER" if name == "UNVERIFIED_ID" else name
         if vault is None:
             notes.append(f"{subject} contained {LABELS[name]}. It was removed.")
-            return f"[{name}]"
+            return f"[{shown_as}]"
         notes.append(f"{subject} contained {LABELS[name]}. The assistant was given a placeholder in its place.")
-        return vault.placeholder(name, value)
+        return vault.placeholder(shown_as, value)
 
     for e in DB:
         if e["name"] in DISABLED:   # switched off in the settings
@@ -715,7 +718,10 @@ def run(prompt, use_guard=True, use_hook=True, role="guest", session="cli", use_
         # The judge runs alongside them for the same reason.
         pool = ThreadPoolExecutor(max_workers=2)
         answer = pool.submit(stage, "llm", call_llm, text, context)
-        verdict = pool.submit(stage, "judge", judge, text) if use_judge else None
+        # The judge decides the topic, not which customer, so every token is shown to it with the
+        # digest from its own instructions. With the real, per-session digest its verdict changed
+        # with the digits: 5 of 30 random digests turned the same question from OK to off-topic.
+        verdict = pool.submit(stage, "judge", judge, re.sub(r"#[0-9a-f]{6}\]", "#3fa9c1]", text)) if use_judge else None
         pool.shutdown(wait=False)
         if not guard_allows(text, "input"):
             return
@@ -731,7 +737,8 @@ def run(prompt, use_guard=True, use_hook=True, role="guest", session="cli", use_
                                     "withheld in this answer. Try again in a moment.")
         # If the model's whole answer is its own "no record" refusal, that is the clearer message and
         # it releases nothing, so it is let through in place of the off-topic notice.
-        if out["judge"] == "OFF_TOPIC" and compact(answer.result()) != compact(NO_RECORD):
+        refusal = compact(NO_RECORD) in compact(answer.result()) and len(answer.result()) <= 2 * len(NO_RECORD)
+        if out["judge"] == "OFF_TOPIC" and not refusal:
             out["notes"].append("This assistant only handles banking work, so the request was not answered.")
             out["stopped_by"] = "our layer, input: off topic"
             return
@@ -817,11 +824,11 @@ def check():
         assert compact(sneaky) not in compact(out) and "[" in out, sneaky
     # other countries: validators and context words
     assert hook("My NIN is 12345678902.", "input")[0] == "My NIN is [NG_NIN]."           # Verhoeff passes
-    assert hook("My NIN is 12345678901.", "input")[0] == "My NIN is [UNVERIFIED_ID]."    # Verhoeff fails: catch-all
+    assert hook("My NIN is 12345678901.", "input")[0] == "My NIN is [NUMBER]."    # Verhoeff fails: catch-all
     assert hook("Order 12345678902 has shipped.", "input")[0] == "Order 12345678902 has shipped."  # no context
     assert hook("BVN: 22345678901", "input")[0] == "BVN: [NG_BVN]"
     assert hook("SA ID 8001015009087.", "input")[0] == "SA ID [ZA_ID]."                 # real date, Luhn passes
-    assert hook("ref 8013015009087", "input")[0] == "ref [UNVERIFIED_ID]"               # month 13: not a ZA ID, but 13 digits
+    assert hook("ref 8013015009087", "input")[0] == "ref [NUMBER]"               # month 13: not a ZA ID, but 13 digits
     assert hook("KRA PIN A123456789X", "input")[0] == "KRA PIN [KE_KRA_PIN]"
     assert hook("call 0803 123 4567 or +254 712 345 678", "input")[0] == "call [NG_PHONE] or [KE_PHONE]"
     # for signed-in staff a flagged prompt is not blocked, only marked, and run() then withholds
@@ -837,8 +844,8 @@ def check():
     assert hook("decode R0hBLTEyMzQ1Njc4OS0w please", "input")[0] == "decode [ENCODED_SENSITIVE] please"   # Base64
     assert hook("hex 4748412d3132333435363738392d30 here", "input")[0] == "hex [ENCODED_SENSITIVE] here"
     # catch-all: an unknown format next to an identity word goes; money, dates and plain references stay
-    assert hook("Her voter ID is 4455667788.", "input")[0] == "Her voter ID is [UNVERIFIED_ID]."
-    assert hook("passport: AB1234567", "input")[0] == "passport: [UNVERIFIED_ID]"
+    assert hook("Her voter ID is 4455667788.", "input")[0] == "Her voter ID is [NUMBER]."
+    assert hook("passport: AB1234567", "input")[0] == "passport: [NUMBER]"
     for clean in ("Invoice 12345678 was paid on 2026-10-04.", "The balance is GHS 16,760.36.",
                   "The account holds GHS 1250000 today.", "Card issued 2026-10-04.", TESTS[6][1]):
         assert hook(clean, "output") == (clean, []), clean
@@ -847,7 +854,7 @@ def check():
     assert hook("Pay to GB83 WEST 1234 5698 7654 32 today", "input")[0] != "Pay to [IBAN] today"          # mod 97 fails
     assert hook("Use 4111 1111 1111 1111 for it", "input")[0] == "Use [CREDIT_CARD] for it"               # Luhn passes
     assert hook("SSN 078-05-1120, call +44 20 7946 0958", "input")[0] == "SSN [US_SSN], call [PHONE_INTL]"
-    assert hook("Paid from 109725001234 yesterday", "input")[0] == "Paid from [UNVERIFIED_ID] yesterday"  # 12 digits, no identity word
+    assert hook("Paid from 109725001234 yesterday", "input")[0] == "Paid from [NUMBER] yesterday"  # 12 digits, no identity word
     # held data, staff: tokens, never values, and only for customers the request refers to
     vault = Vault("session-a", "teller")
     asked, _ = hook(f"Who has Ghana Card {c['ghana_card']}? Also check {CUSTOMERS[1]['name']}.", "input", vault)
@@ -948,7 +955,7 @@ def check():
     # strict mode: a bare number of eight digits or more goes; dates, money and shorter numbers stay
     OPTIONS["strict"] = True
     try:
-        assert hook("Please check 12345678 for me, order 1234567.", "input")[0] == "Please check [UNVERIFIED_ID] for me, order 1234567."
+        assert hook("Please check 12345678 for me, order 1234567.", "input")[0] == "Please check [NUMBER] for me, order 1234567."
         for clean in ("Meet on 17/09/2014 17:20 or 2026-10-04.", "The balance is GHS 16,760.36."):
             assert hook(clean, "input")[0] == clean, clean
     finally:
